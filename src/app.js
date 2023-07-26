@@ -1,12 +1,11 @@
-import cors from "cors"
 import express, { Router } from "express"
+import cors from "cors"
 import dotenv from "dotenv"
-import { getGames } from "./controllers/jogos.controllers.js"
-import games from "./routes/games.routes.js"
 import router from "./routes/index.routes.js"
 
 
 //// configs
+const app = express()
 app.use(cors())
 app.use(express.json())
 dotenv.config()
