@@ -36,11 +36,29 @@ export async function postClientes (req, res){
 
         }
 
-       
-
-
-
      catch (err){
+        res.status(500).send(err.message)
+
+    }
+
+}
+
+
+export async function getClientesId (req, res){
+
+    const{id} = req.params
+
+    try {
+
+        const verificadorId = await db.query('SELECT * from customers WHERE id = $1;', [id])
+        if (verificadorId.rows.length === 0) {
+            return res.status(404).send("Cliente não encontrado");
+          }
+
+        res.send(verificadorId.rows[0])
+
+
+    } catch (err){
         res.status(500).send(err.message)
 
     }
