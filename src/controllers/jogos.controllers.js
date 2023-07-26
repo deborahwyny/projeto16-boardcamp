@@ -5,7 +5,7 @@ export async function getGames (req, res){
 
     try {
         const listaJogos = await db.query('SELECT * from games;')
-        res.send(listaJogos.rows[0])
+        res.send(listaJogos.rows)
 
     } catch (err){
         res.status(500).send(err.message)
