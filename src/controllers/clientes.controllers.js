@@ -5,7 +5,7 @@ export async function getClientes (req, res){
     try {
 
     const listaClientes = await db.query('SELECT * from customers;')
-    res.send(listaClientes);
+    res.send(listaClientes.rows)
 
     } catch (err){
         res.status(500).send(err.message)
@@ -55,7 +55,7 @@ export async function getClientesId (req, res){
             return res.status(404).send("Cliente não encontrado");
           }
 
-        res.send(verificadorId)
+        res.send(verificadorId.rows[0])
 
 
     } catch (err){

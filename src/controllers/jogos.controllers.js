@@ -5,7 +5,7 @@ export async function getGames (req, res){
 
     try {
         const listaJogos = await db.query('SELECT * from games;')
-        res.send(listaJogos)
+        res.send(listaJogos.rows[0])
 
     } catch (err){
         res.status(500).send(err.message)
@@ -24,7 +24,7 @@ export async function postGames (req, res){
             return res.status(400).send("preencha todos os campos")
         }
 
-        const verificarTitulo = await db.query('SELECT * from games WHERE name = $1;', [name]);
+        const verificarTitulo = await db.query('SELECT * from games WHERE name = $1;', [name])
         if (verificarTitulo.rows && verificarTitulo.rows.length !== 0) {
             return res.status(409).send("Jogo já existe")
         }
