@@ -20,7 +20,6 @@ export async function postGames (req, res){
 
     try {
 
-
         if (!name || !stockTotal || !pricePerDay) {
             return res.status(400).send("preencha todos os campos")
         }

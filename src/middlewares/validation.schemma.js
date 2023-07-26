@@ -7,7 +7,7 @@ export function validateSchemma (schemma){
 
     if (validation.error) {
         const erros = validation.error.details.map(detail => detail.message)
-        return res.status(422).send(erros)
+        return res.status(400).send(erros)
     }
 
     next()

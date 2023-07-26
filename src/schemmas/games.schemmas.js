@@ -7,3 +7,5 @@ export const schemmaGame = Joi.object({
     stockTotal: Joi.number().greater(0).required(),
     pricePerDay: Joi.number().greater(0).required()
 })
+
+
