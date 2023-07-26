@@ -5,7 +5,7 @@ export async function getClientes (req, res){
     try {
 
     const listaClientes = await db.query('SELECT * from customers;')
-    res.send(listaClientes.rows[0]);
+    res.send(listaClientes);
 
     } catch (err){
         res.status(500).send(err.message)
@@ -55,8 +55,34 @@ export async function getClientesId (req, res){
             return res.status(404).send("Cliente não encontrado");
           }
 
-        res.send(verificadorId.rows[0])
+        res.send(verificadorId)
 
+
+    } catch (err){
+        res.status(500).send(err.message)
+
+    }
+
+}
+
+
+export async function putClientes (req, res){
+    const { name, phone, cpf, birthday } = req.body
+    const{id} = req.params
+
+
+    try {
+
+        const cpfVerificador = await db.query('SELECT * from customers WHERE AND id!=$2;', [cpf, id])
+        if (cpfVerificador.rowCount) return res.sendStatus(409)
+
+        await db.query(`UPDATE customers SET "name"=$1, "phone"=$2, "cpf"=$3, "birthday"=$4 WHERE "id"=$5`,[name, phone, cpf, birthday, id])
+
+
+        res.sendStatus(200)
+
+
+    
 
     } catch (err){
         res.status(500).send(err.message)
