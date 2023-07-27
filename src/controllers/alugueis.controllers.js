@@ -21,8 +21,27 @@ export async function getAlugueis (req, res){
         JOIN customers ON rentals."customerId" = customers.id
         JOIN games ON rentals."gameId" = games.id;`)
 
+        console.log("oioioi",listaAlugueis)
+
 
         res.send(listaAlugueis.rows)
+
+    } catch (err){
+        res.status(500).send(err.message)
+
+    }
+
+}
+
+
+export async function postAlugueis (req, res){
+
+    const { customerId, gameId, daysRented } = req.body
+
+
+    try {
+
+
 
     } catch (err){
         res.status(500).send(err.message)
