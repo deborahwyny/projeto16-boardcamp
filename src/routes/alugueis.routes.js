@@ -4,7 +4,7 @@ import { getAlugueis, postAlugueis } from "../controllers/alugueis.controllers.j
 
 const alugueisRoutes = Router()
 alugueisRoutes.get("/rentals",getAlugueis)
-alugueisRoutes.post("rentals",postAlugueis)
+alugueisRoutes.post("/rentals",postAlugueis)
 
 
 
