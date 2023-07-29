@@ -25,7 +25,7 @@ export async function getAlugueis (req, res){
         console.log("oioioi",listaAlugueis.rows)
 
 
-        res.send(listaAlugueis)
+        res.send(listaAlugueis.rows)
 
     } catch (err){
         res.status(500).send(err.message)
@@ -77,4 +77,67 @@ export async function postAlugueis (req, res){
 
     }
 
+}
+
+export async function finalizarAluguel(req, res){
+
+    const {id} = req.params
+    console.log("oi", id)
+
+
+
+    try{
+
+
+        const verificarRent = await db.query('SELECT * FROM rentals WHERE id=$1;', [id])
+        if(!verificarRent) return res.sendStatus(404)
+        console.log("o2", verificarRent)
+
+
+        if(verificarRent.rows[0].returnDate != null) return res.sendStatus(404)
+
+        const rentJogo =  await db.query('SELECT * FROM games WHERE id=$1;', [verificarRent.rows[0].gameId])
+        console.log("oi3", rentJogo)
+
+
+        let returnDate = dayjs()
+        let rentDate = dayjs(verificarRent.rows[0].rentDate)
+        const diferencaDias = returnDate.diff(rentDate, 'day')
+        console.log("oi4", diferencaDias)
+
+        let delayFee = 0
+
+        if(diferencaDias > verificarRent.rows[0].daysRented) {
+             delayFee = diferencaDias * rentJogo.rows[0].pricePerDay
+        }
+
+        const returnDateString = returnDate.format('YYYY-MM-DD');
+        console.log("oi5", delayFee)
+
+        await db.query('UPDATE rentals SET "returnDate" = $1, "delayFee" = $2 WHERE id = $3;', [returnDateString, delayFee, id])
+
+        res.send(200)
+
+
+    } catch(err){
+        res.status(500).send(err.message)
+
+    }
+}
+
+export async function deleteAlugueis(req,res){
+
+    const {id} = req.params
+
+    try{
+
+
+
+        res.send(200)
+
+
+    } catch(err){
+        res.status(500).send(err.message)
+
+    }
 }
