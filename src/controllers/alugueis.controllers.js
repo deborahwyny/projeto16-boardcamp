@@ -94,7 +94,7 @@ export async function finalizarAluguel(req, res){
         console.log("o2", verificarRent)
 
 
-        if(verificarRent.rows[0].returnDate != null) return res.sendStatus(404)
+        if(verificarRent.rows[0].returnDate != null) return res.sendStatus(400)
 
         const rentJogo =  await db.query('SELECT * FROM games WHERE id=$1;', [verificarRent.rows[0].gameId])
         console.log("oi3", rentJogo)
@@ -131,6 +131,12 @@ export async function deleteAlugueis(req,res){
 
     try{
 
+        const verificarAluguel = await db.query('SELECT * FROM rentals WHERE id=$1;', [id])
+        if(!verificarAluguel) return res.sendStatus(404)
+
+        if(verificarAluguel.rows[0].returnDate == null) return res.sendStatus(400)
+
+        await db.query('DELETE FROM rentals WHERE id=$1;', [id])
 
 
         res.send(200)
