@@ -5,7 +5,6 @@ import dayjs from "dayjs"
 export async function getAlugueis (req, res){
 
     try {
-        
         const listaAlugueis = await db.query(`
         SELECT
           rentals.id,
@@ -16,16 +15,38 @@ export async function getAlugueis (req, res){
           rentals."returnDate",
           rentals."originalPrice",
           rentals."delayFee",
-          customers.name AS "nomeCliente",
-          games.name AS "nomeJogo"
+          customers.name AS customer_name,
+          games.name AS game_name
         FROM rentals
         JOIN customers ON rentals."customerId" = customers.id
-        JOIN games ON rentals."gameId" = games.id;`)
+        JOIN games ON rentals."gameId" = games.id;
+      `)
+
+      const alugueis = listaAlugueis.rows.map((aluguel) => {
+        return {
+          id: aluguel.id,
+          customerId: aluguel.customerId,
+          gameId: aluguel.gameId,
+          rentDate: aluguel.rentDate,
+          daysRented: aluguel.daysRented,
+          returnDate: aluguel.returnDate,
+          originalPrice: aluguel.originalPrice,
+          delayFee: aluguel.delayFee,
+          customer: {
+            id: aluguel.customerId,
+            name: aluguel.customer_name,
+          },
+          game: {
+            id: aluguel.gameId,
+            name: aluguel.game_name,
+          },
+        };
+      })
 
         console.log("oioioi",listaAlugueis.rows)
 
 
-        res.send(listaAlugueis.rows)
+        res.send(alugueis)
 
     } catch (err){
         res.status(500).send(err.message)
@@ -90,7 +111,7 @@ export async function finalizarAluguel(req, res){
 
 
         const verificarRent = await db.query('SELECT * FROM rentals WHERE id=$1;', [id])
-        if(!verificarRent) return res.sendStatus(404)
+        if(verificarRent.rowCount == 0) return res.sendStatus(404)
         console.log("o2", verificarRent)
 
 
@@ -108,7 +129,7 @@ export async function finalizarAluguel(req, res){
         let delayFee = 0
 
         if(diferencaDias > verificarRent.rows[0].daysRented) {
-             delayFee = diferencaDias * rentJogo.rows[0].pricePerDay
+             delayFee = (diferencaDias-verificarRent.rows[0].daysRented) * rentJogo.rows[0].pricePerDay
         }
 
         const returnDateString = returnDate.format('YYYY-MM-DD');
@@ -132,7 +153,7 @@ export async function deleteAlugueis(req,res){
     try{
 
         const verificarAluguel = await db.query('SELECT * FROM rentals WHERE id=$1;', [id])
-        if(!verificarAluguel) return res.sendStatus(404)
+        if(verificarAluguel.rowCount == 0) return res.sendStatus(404)
 
         if(verificarAluguel.rows[0].returnDate == null) return res.sendStatus(400)
 
